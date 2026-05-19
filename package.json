@@ -32,7 +32,5 @@
     "vite": "^5.4.0",
     "vitest": "^2.1.9"
   },
-  "overrides": {
-    "eslint": "$eslint"
-  }
+  "overrides": {}
 }
