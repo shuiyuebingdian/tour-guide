@@ -32,10 +32,10 @@ export default function MapView({
     async function init() {
       const AMapLoader = await import('@amap/amap-jsapi-loader');
       window._AMapSecurityConfig = {
-        securityJsCode: '',
+        securityJsCode: 'ac84cb27cdf872f3b8a0c644c7272351',
       };
       const AMap = await AMapLoader.default.load({
-        key: '',
+        key: '089304f00db3546bb73a3c8294c6733a',
         version: '2.0',
       });
 
