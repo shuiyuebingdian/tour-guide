@@ -85,7 +85,7 @@ export default function MapView({
       mapRef.current.add(marker);
       markersRef.current.push(marker);
     });
-  }, [attractions, onAttractionClick]);
+  }, [attractions, onAttractionClick, loading]);
 
   useEffect(() => {
     if (!mapRef.current || !userLocation) return;
