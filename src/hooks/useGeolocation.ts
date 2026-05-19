@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 export interface GeolocationState {
-  location: [number, number] | null; // [lng, lat]
+  location: number[] | null; // [lng, lat]
   error: string | null;
   loading: boolean;
 }

@@ -8,8 +8,8 @@ function toRad(deg: number): number {
 
 /** Haversine distance in meters between two [lng, lat] points */
 export function haversineDistance(
-  [lng1, lat1]: [number, number],
-  [lng2, lat2]: [number, number],
+  [lng1, lat1]: number[],
+  [lng2, lat2]: number[],
 ): number {
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);
@@ -20,14 +20,14 @@ export function haversineDistance(
 }
 
 export function isNearby(
-  userLocation: [number, number],
-  attraction: { location: [number, number]; radius: number },
+  userLocation: number[],
+  attraction: { location: number[]; radius: number },
 ): boolean {
   return haversineDistance(userLocation, attraction.location) <= attraction.radius;
 }
 
 export function sortByDistance(
-  userLocation: [number, number],
+  userLocation: number[],
   attractions: Attraction[],
 ): Attraction[] {
   return [...attractions].sort(

@@ -17,19 +17,19 @@ describe('haversineDistance', () => {
 
 describe('isNearby', () => {
   it('returns true when within radius', () => {
-    const attraction = { location: [116.397, 39.915] as [number, number], radius: 50 };
+    const attraction = { location: [116.397, 39.915] as number[], radius: 50 };
     expect(isNearby([116.397, 39.9151], attraction)).toBe(true);
   });
 
   it('returns false when outside radius', () => {
-    const attraction = { location: [116.397, 39.915] as [number, number], radius: 50 };
+    const attraction = { location: [116.397, 39.915] as number[], radius: 50 };
     expect(isNearby([116.397, 39.920], attraction)).toBe(false);
   });
 });
 
 describe('sortByDistance', () => {
   it('sorts attractions by distance ascending', () => {
-    const current: [number, number] = [116.397, 39.915];
+    const current: number[] = [116.397, 39.915];
     const items = [
       { id: 'far', location: [116.397, 39.920], radius: 30 } as unknown as Attraction,
       { id: 'near', location: [116.397, 39.9151], radius: 30 } as unknown as Attraction,

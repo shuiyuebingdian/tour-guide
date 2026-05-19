@@ -4,7 +4,7 @@ import { isNearby, sortByDistance } from '../utils/geo';
 import { usePlayHistory } from './usePlayHistory';
 
 export function useNearbyAttractions(
-  userLocation: [number, number] | null,
+  userLocation: number[] | null,
   allAttractions: Attraction[],
 ) {
   const { hasPlayedToday } = usePlayHistory();

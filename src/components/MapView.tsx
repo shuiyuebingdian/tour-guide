@@ -10,7 +10,7 @@ declare global {
 }
 
 interface MapViewProps {
-  userLocation: [number, number] | null;
+  userLocation: number[] | null;
   attractions: Attraction[];
   onAttractionClick: (attraction: Attraction) => void;
 }
