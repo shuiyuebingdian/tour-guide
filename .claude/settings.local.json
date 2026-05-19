@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Skill(superpowers:subagent-driven-development)",
+      "Bash(cp temp-scaffold/.gitignore .gitignore)",
+      "Bash(cp -r temp-scaffold/* .)",
+      "Bash(rm -rf temp-scaffold)",
+      "Bash(npm install *)",
+      "Bash(timeout 8 npm run dev)"
+    ]
+  }
+}
