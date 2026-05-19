@@ -10,7 +10,8 @@
       "Bash(npm install *)",
       "Bash(timeout 8 npm run dev)",
       "Bash(npm run *)",
-      "Bash(npx vitest *)"
+      "Bash(npx vitest *)",
+      "Bash(git push *)"
     ]
   }
 }

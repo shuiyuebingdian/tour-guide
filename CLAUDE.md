@@ -48,6 +48,12 @@ src/
 
 **No backend, no runtime API calls** (except map tiles from amap.com). All attraction data is pre-bundled at build time.
 
+## Feature Map
+
+功能实现状态记录在 [`docs/FEATURE_MAP.md`](docs/FEATURE_MAP.md)，每次代码变更涉及功能变化时同步更新。
+
+---
+
 ## Current State (v1.0 初版)
 
 Beijing data only: 故宫 with 5 sub-attractions (午门, 太和殿, 中和殿, 保和殿, 乾清宫). TTS-based playback (no audio files). PWA with offline caching. Deployed to GitHub Pages.
