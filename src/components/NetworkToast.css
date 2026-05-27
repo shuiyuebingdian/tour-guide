@@ -53,3 +53,12 @@
   padding: 0;
   flex-shrink: 0;
 }
+
+.network-toast-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.network-toast-close:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 1px;
+}

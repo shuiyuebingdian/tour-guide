@@ -8,12 +8,14 @@ interface NetworkToastProps {
 
 export default function NetworkToast({ type, onDone }: NetworkToastProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
 
   useEffect(() => {
     if (!type) return;
 
     timerRef.current = setTimeout(() => {
-      onDone();
+      onDoneRef.current();
     }, 3000);
 
     return () => {
@@ -21,7 +23,7 @@ export default function NetworkToast({ type, onDone }: NetworkToastProps) {
         clearTimeout(timerRef.current);
       }
     };
-  }, [type, onDone]);
+  }, [type]);
 
   if (!type) return null;
 
