@@ -11,6 +11,8 @@ interface ListViewProps {
   onClearHistory: () => void;
   triggerDistance: number;
   onTriggerDistanceChange: (d: number) => void;
+  wakeLockEnabled: boolean;
+  onWakeLockChange: (v: boolean) => void;
 }
 
 export default function ListView({
@@ -20,6 +22,8 @@ export default function ListView({
   onClearHistory,
   triggerDistance,
   onTriggerDistanceChange,
+  wakeLockEnabled,
+  onWakeLockChange,
 }: ListViewProps) {
   const [search, setSearch] = useState('');
   const [expandedCities, setExpandedCities] = useState<Set<string>>(new Set());
@@ -179,6 +183,14 @@ export default function ListView({
               <option value={100}>100m</option>
               <option value={200}>200m</option>
             </select>
+          </label>
+          <label className="setting-label">
+            <input
+              type="checkbox"
+              checked={wakeLockEnabled}
+              onChange={(e) => onWakeLockChange(e.target.checked)}
+            />
+            <span>保持屏幕常亮</span>
           </label>
         </div>
         <p>💡 共 {attractions.length} 个讲解，覆盖 {cities.length} 个城市 · {totalAreas} 个景区</p>

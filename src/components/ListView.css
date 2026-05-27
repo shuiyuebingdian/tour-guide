@@ -160,15 +160,27 @@
 }
 
 .list-settings {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .setting-label {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-size: 13px;
   color: #666;
+}
+
+.setting-label input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: #1a73e8;
 }
 
 .setting-select {

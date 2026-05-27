@@ -7,6 +7,7 @@ import { clearPlayHistory } from './hooks/usePlayHistory';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { useAutoPlayPreference } from './hooks/useAutoPlayPreference';
 import { useTriggerDistance } from './hooks/useTriggerDistance';
+import { useWakeLock } from './hooks/useWakeLock';
 import NetworkToast from './components/NetworkToast';
 import { haversineDistance } from './utils/geo';
 import MapView from './components/MapView';
@@ -39,6 +40,7 @@ function App() {
   const [selectedAttraction, setSelectedAttraction] = useState<Attraction | null>(null);
   const { location, error, refresh, clearError } = useGeolocation();
   const [triggerDistance, setTriggerDistance] = useTriggerDistance();
+  const [wakeLockEnabled, setWakeLockEnabled] = useWakeLock();
   const { nearby, unplayedNearby } = useNearbyAttractions(location, allAttractions, triggerDistance);
 
   const handleProximityPlay = useCallback((attraction: Attraction) => {
@@ -184,6 +186,8 @@ function App() {
                 onClearHistory={handleClearHistory}
                 triggerDistance={triggerDistance}
                 onTriggerDistanceChange={setTriggerDistance}
+                wakeLockEnabled={wakeLockEnabled}
+                onWakeLockChange={setWakeLockEnabled}
               />
             )}
           </main>
