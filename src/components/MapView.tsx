@@ -115,7 +115,7 @@ export default function MapView({
     clearAreaMarkers(map);
     areas.forEach((area) => {
       const marker = new AMap.Marker({
-        position: wgs84ToGcj02(area.center),
+        position: area.center,
         title: area.name,
         content: areaMarkerHtml(area.icon, area.name),
         offset: new AMap.Pixel(0, -24),
@@ -140,7 +140,7 @@ export default function MapView({
       const color = AREA_COLORS[attraction.areaId] || '#1a73e8';
       const dotHtml = attractionDotHtml(color);
       const marker = new AMap.Marker({
-        position: wgs84ToGcj02(attraction.location),
+        position: attraction.location,
         title: attraction.name,
         content: dotHtml,
         offset: new AMap.Pixel(-7, -7),
@@ -237,7 +237,7 @@ export default function MapView({
       const AMap = amapRef.current;
       const map = new AMap.Map(containerRef.current, {
         zoom: 15,
-        center: wgs84ToGcj02([116.397428, 39.908723]),
+        center: [116.397428, 39.908723],
       });
       mapRef.current = map;
       map.on('click', closeInfoWindow);
@@ -278,8 +278,7 @@ export default function MapView({
       closeInfoWindow();
 
       // Zoom to area bounds based on radius
-      const gcjCenter = wgs84ToGcj02(area.center);
-      const center = new window.AMap.LngLat(gcjCenter[0], gcjCenter[1]);
+      const center = new window.AMap.LngLat(area.center[0], area.center[1]);
       // Approximate: radius in meters → map zoom
       const zoomByRadius = (r: number) => {
         if (r <= 500) return 15;
