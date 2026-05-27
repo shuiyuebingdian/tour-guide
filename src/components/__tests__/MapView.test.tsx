@@ -20,7 +20,11 @@ describe('MapView', () => {
     const { container } = render(
       <MapView
         userLocation={null}
+        areas={[]}
         attractions={[]}
+        selectedAreaId={null}
+        onAreaClick={vi.fn()}
+        onAreaBack={vi.fn()}
         onAttractionClick={vi.fn()}
       />,
     );
@@ -31,7 +35,11 @@ describe('MapView', () => {
     render(
       <MapView
         userLocation={null}
+        areas={[]}
         attractions={[]}
+        selectedAreaId={null}
+        onAreaClick={vi.fn()}
+        onAreaBack={vi.fn()}
         onAttractionClick={vi.fn()}
       />,
     );

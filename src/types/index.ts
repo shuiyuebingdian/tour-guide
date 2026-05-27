@@ -11,6 +11,7 @@ export interface ScenicArea {
   cityId: string;
   center: number[];
   radius: number;
+  icon: string;
   overview: string;
   overviewSegments: Segment[];
 }

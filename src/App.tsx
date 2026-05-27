@@ -11,7 +11,7 @@ import { useWakeLock } from './hooks/useWakeLock';
 import NetworkToast from './components/NetworkToast';
 import { haversineDistance } from './utils/geo';
 import MapView from './components/MapView';
-import AttractionCard from './components/AttractionCard';
+import AreaCard from './components/AreaCard';
 import ProximityAlert from './components/ProximityAlert';
 import PlayerView from './components/PlayerView';
 import ListView from './components/ListView';
@@ -38,10 +38,11 @@ const DEFAULT_CENTER = citiesData[0]?.center || [116.397428, 39.908723];
 function App() {
   const [view, setView] = useState<View>('map');
   const [selectedAttraction, setSelectedAttraction] = useState<Attraction | null>(null);
+  const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
   const { location, error, refresh, clearError } = useGeolocation();
   const [triggerDistance, setTriggerDistance] = useTriggerDistance();
   const [wakeLockEnabled, setWakeLockEnabled] = useWakeLock();
-  const { nearby, unplayedNearby } = useNearbyAttractions(location, allAttractions, triggerDistance);
+  const { unplayedNearby } = useNearbyAttractions(location, allAttractions, triggerDistance);
 
   const handleProximityPlay = useCallback((attraction: Attraction) => {
     setSelectedAttraction(attraction);
@@ -76,15 +77,28 @@ function App() {
     }
   }, [isOnline, wasOffline]);
 
-  const displayAttractions = useMemo(() => {
-    if (nearby.length > 0) return nearby;
-    // Fallback: sort all attractions by distance from default city center
-    return [...allAttractions].sort(
-      (a, b) =>
-        haversineDistance(DEFAULT_CENTER, a.location) -
-        haversineDistance(DEFAULT_CENTER, b.location),
-    );
-  }, [nearby]);
+  // Compute nearest areas for bottom cards (by area center distance)
+  const nearbyAreas = useMemo(() => {
+    const center = location || DEFAULT_CENTER;
+    return [...areasData]
+      .map((area) => ({
+        area,
+        distance: haversineDistance(center, area.center),
+        attractionCount: allAttractions.filter(
+          (a) => a.areaId === area.id && !a.id.endsWith('-overview'),
+        ).length,
+      }))
+      .sort((a, b) => a.distance - b.distance);
+  }, [location, allAttractions]);
+
+  const handleAreaClick = useCallback((areaId: string) => {
+    setSelectedAreaId(areaId);
+    setView('map');
+  }, []);
+
+  const handleAreaBack = useCallback(() => {
+    setSelectedAreaId(null);
+  }, []);
 
   const handleAttractionClick = useCallback((attraction: Attraction) => {
     setSelectedAttraction(attraction);
@@ -124,7 +138,11 @@ function App() {
               <div className="map-wrapper">
                 <MapView
                   userLocation={location}
+                  areas={areasData}
                   attractions={allAttractions}
+                  selectedAreaId={selectedAreaId}
+                  onAreaClick={handleAreaClick}
+                  onAreaBack={handleAreaBack}
                   onAttractionClick={handleAttractionClick}
                 />
                 <div className="bottom-overlay">
@@ -147,22 +165,15 @@ function App() {
                       onAutoPlayChange={setAutoPlay}
                     />
                   )}
-                  {displayAttractions.length > 0 && (
+                  {!selectedAreaId && nearbyAreas.length > 0 && (
                     <div className="bottom-cards">
-                      {displayAttractions.slice(0, 3).map((a) => (
-                        <AttractionCard
-                          key={a.id}
-                          attraction={a}
-                          distance={haversineDistance(
-                            location || DEFAULT_CENTER,
-                            a.location,
-                          )}
-                          isActive={
-                            location
-                              ? a.id === unplayedNearby[0]?.id
-                              : false
-                          }
-                          onClick={handleAttractionClick}
+                      {nearbyAreas.slice(0, 3).map(({ area, distance, attractionCount }) => (
+                        <AreaCard
+                          key={area.id}
+                          area={area}
+                          distance={distance}
+                          attractionCount={attractionCount}
+                          onClick={() => handleAreaClick(area.id)}
                         />
                       ))}
                     </div>

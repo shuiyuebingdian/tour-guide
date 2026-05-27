@@ -2,6 +2,7 @@
   {
     "id": "gugong",
     "name": "故宫博物院",
+    "icon": "🏯",
     "cityId": "beijing",
     "center": [116.397026, 39.917908],
     "radius": 800,
@@ -20,6 +21,7 @@
   {
     "id": "yiheyuan",
     "name": "颐和园",
+    "icon": "🌿",
     "cityId": "beijing",
     "center": [116.272, 39.999],
     "radius": 1500,
@@ -38,6 +40,7 @@
   {
     "id": "tiantan",
     "name": "天坛",
+    "icon": "⛩️",
     "cityId": "beijing",
     "center": [116.410, 39.882],
     "radius": 1200,
@@ -56,6 +59,7 @@
   {
     "id": "badaling",
     "name": "八达岭长城",
+    "icon": "🏰",
     "cityId": "beijing",
     "center": [116.016, 40.353],
     "radius": 2000,
