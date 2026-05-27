@@ -34,8 +34,8 @@ const DEFAULT_CENTER = citiesData[0]?.center || [116.397428, 39.908723];
 function App() {
   const [view, setView] = useState<View>('map');
   const [selectedAttraction, setSelectedAttraction] = useState<Attraction | null>(null);
-  const { location, error } = useGeolocation();
-  const { nearby, unplayedNearby, nearestUnplayed } = useNearbyAttractions(location, allAttractions);
+  const { location, error, refresh, clearError } = useGeolocation();
+  const { nearby, unplayedNearby } = useNearbyAttractions(location, allAttractions);
 
   const handleProximityPlay = useCallback((attraction: Attraction) => {
     setSelectedAttraction(attraction);
@@ -43,7 +43,7 @@ function App() {
   }, []);
 
   const { status: alertStatus, target: alertTarget, dismiss, markTriggered } =
-    useProximityAlert({ nearestUnplayed, onPlay: handleProximityPlay });
+    useProximityAlert({ unplayedNearby, onPlay: handleProximityPlay });
 
   const { isOnline, wasOffline } = useNetworkStatus();
   const [networkToast, setNetworkToast] = useState<'offline' | 'online' | null>(null);
@@ -146,7 +146,10 @@ function App() {
                 {error && (
                   <div className="location-error">
                     <p>{error}</p>
-                    <button onClick={() => window.location.reload()}>重试</button>
+                    <div className="location-error-actions">
+                      <button className="btn-dismiss" onClick={clearError}>跳过</button>
+                      <button className="btn-retry" onClick={refresh}>重试</button>
+                    </div>
                   </div>
                 )}
               </div>

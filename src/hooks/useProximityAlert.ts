@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type { Attraction } from '../types';
 
 const STORAGE_KEY = 'tour-guide-alerts';
@@ -27,7 +27,6 @@ function recordAlert(id: string): void {
     if (!data[today].includes(id)) {
       data[today].push(id);
     }
-    // Clean up keys older than 7 days
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 7);
     const cutoffStr = cutoff.toISOString().slice(0, 10);
@@ -45,79 +44,72 @@ function recordAlert(id: string): void {
 export type ProximityStatus = 'idle' | 'alerting' | 'dismissed';
 
 interface UseProximityAlertOptions {
-  nearestUnplayed: Attraction | null;
+  unplayedNearby: Attraction[];
   onPlay: (attraction: Attraction) => void;
 }
 
 export function useProximityAlert({
-  nearestUnplayed,
+  unplayedNearby,
   onPlay,
 }: UseProximityAlertOptions) {
   const [status, setStatus] = useState<ProximityStatus>('idle');
   const [target, setTarget] = useState<Attraction | null>(null);
-  const dismissedIdRef = useRef<string | null>(null);
+  const [dismissedId, setDismissedId] = useState<string | null>(null);
   const onPlayRef = useRef(onPlay);
   onPlayRef.current = onPlay;
   const statusRef = useRef(status);
   statusRef.current = status;
   const targetRef = useRef(target);
   targetRef.current = target;
+  const lastRecordedRef = useRef<string | null>(null);
+
+  const candidate = useMemo(() => {
+    return (
+      unplayedNearby.find((a) => {
+        // Allow the just-recorded id through to prevent feedback loop
+        if (hasAlertedToday(a.id) && a.id !== lastRecordedRef.current) return false;
+        if (dismissedId === a.id) return false;
+        return true;
+      }) ?? null
+    );
+  }, [unplayedNearby, dismissedId]);
 
   useEffect(() => {
-    const id = nearestUnplayed?.id ?? null;
+    const id = candidate?.id ?? null;
 
     if (id === null) {
       setStatus('idle');
       setTarget(null);
-      dismissedIdRef.current = null;
+      lastRecordedRef.current = null;
       return;
     }
 
-    // Already alerted today — never re-alert
-    if (hasAlertedToday(id)) {
+    if (targetRef.current?.id === id && statusRef.current === 'alerting') {
       return;
     }
 
-    // Still dismissed for this same attraction — don't re-alert
-    if (
-      statusRef.current === 'dismissed' &&
-      dismissedIdRef.current === id
-    ) {
-      return;
-    }
+    setTarget(candidate);
+    setStatus('alerting');
+    recordAlert(id);
+    lastRecordedRef.current = id;
 
-    // Previous dismissed target no longer nearest — clear ref
-    if (
-      dismissedIdRef.current !== null &&
-      dismissedIdRef.current !== id
-    ) {
-      dismissedIdRef.current = null;
+    if (navigator.vibrate) {
+      navigator.vibrate(200);
     }
-
-    // No existing alert for this target — alert!
-    if (targetRef.current?.id !== id || statusRef.current !== 'alerting') {
-      setTarget(nearestUnplayed);
-      setStatus('alerting');
-      recordAlert(id);
-
-      if (navigator.vibrate) {
-        navigator.vibrate(200);
-      }
-    }
-  }, [nearestUnplayed?.id ?? null]);
+  }, [candidate?.id ?? null]);
 
   const dismiss = useCallback(() => {
     if (target) {
-      dismissedIdRef.current = target.id;
+      setDismissedId(target.id);
       setStatus('dismissed');
     }
   }, [target]);
 
   const markTriggered = useCallback(() => {
     if (target) {
+      setDismissedId(null);
       setStatus('idle');
       setTarget(null);
-      dismissedIdRef.current = null;
       onPlayRef.current(target);
     }
   }, [target]);
