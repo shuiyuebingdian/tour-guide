@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { haversineDistance, isNearby, sortByDistance } from '../geo';
+import { haversineDistance, isNearby, sortByDistance, wgs84ToGcj02 } from '../geo';
 import type { Attraction } from '../../types';
 
 describe('haversineDistance', () => {
@@ -36,6 +36,36 @@ describe('isNearby', () => {
     const attraction = { location: [116.397, 39.915] as number[], radius: 100 };
     // Inside attraction radius but outside trigger distance
     expect(isNearby([116.397, 39.9151], attraction, 1)).toBe(false);
+  });
+});
+
+describe('wgs84ToGcj02', () => {
+  it('returns different coords for a Beijing location', () => {
+    const [lng, lat] = wgs84ToGcj02([116.397, 39.916]);
+    // GCJ-02 should shift the point in China
+    expect(lng).not.toBe(116.397);
+    expect(lat).not.toBe(39.916);
+  });
+
+  it('shifts Beijing east and north (GCJ-02 offset)', () => {
+    const [lng, lat] = wgs84ToGcj02([116.397, 39.916]);
+    // GCJ-02 offset for Beijing is roughly +0.006° lng, +0.004° lat
+    expect(lng).toBeGreaterThan(116.397);
+    expect(lat).toBeGreaterThan(39.916);
+  });
+
+  it('returns unchanged coords for locations outside China', () => {
+    // Tokyo
+    const [lng, lat] = wgs84ToGcj02([139.6917, 35.6895]);
+    expect(lng).toBe(139.6917);
+    expect(lat).toBe(35.6895);
+  });
+
+  it('is deterministic', () => {
+    const a = wgs84ToGcj02([116.397, 39.916]);
+    const b = wgs84ToGcj02([116.397, 39.916]);
+    expect(a[0]).toBe(b[0]);
+    expect(a[1]).toBe(b[1]);
   });
 });
 

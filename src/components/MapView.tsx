@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Attraction, ScenicArea } from '../types';
+import { wgs84ToGcj02 } from '../utils/geo';
 import './MapView.css';
 
 declare global {
@@ -33,8 +34,8 @@ function areaMarkerHtml(icon: string, name: string): string {
   </div>`;
 }
 
-function attractionMarkerHtml(color: string): string {
-  return `<div style="background:${color};width:10px;height:10px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 6px rgba(0,0,0,0.3);"></div>`;
+function attractionDotHtml(color: string): string {
+  return `<div style="background:${color};width:12px;height:12px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 6px rgba(0,0,0,0.3);pointer-events:none;"></div>`;
 }
 
 export default function MapView({
@@ -114,7 +115,7 @@ export default function MapView({
     clearAreaMarkers(map);
     areas.forEach((area) => {
       const marker = new AMap.Marker({
-        position: area.center,
+        position: wgs84ToGcj02(area.center),
         title: area.name,
         content: areaMarkerHtml(area.icon, area.name),
         offset: new AMap.Pixel(0, -24),
@@ -137,15 +138,11 @@ export default function MapView({
     );
     areaAttractions.forEach((attraction) => {
       const color = AREA_COLORS[attraction.areaId] || '#1a73e8';
+      const dotHtml = attractionDotHtml(color);
       const marker = new AMap.Marker({
-        position: attraction.location,
+        position: wgs84ToGcj02(attraction.location),
         title: attraction.name,
-        content: attractionMarkerHtml(color),
-        label: {
-          content: `<span style="font-size:11px;color:#333;background:rgba(255,255,255,0.85);padding:1px 6px;border-radius:4px;white-space:nowrap;">${attraction.name}</span>`,
-          direction: 'top',
-          offset: new AMap.Pixel(0, -14),
-        },
+        content: dotHtml,
         offset: new AMap.Pixel(-7, -7),
       });
       marker.on('click', () => {
@@ -157,7 +154,7 @@ export default function MapView({
         </div>`;
         const infoWindow = new AMap.InfoWindow({
           content,
-          offset: new AMap.Pixel(0, -24),
+          offset: new AMap.Pixel(0, -40),
         });
         infoWindow.open(map, marker.getPosition());
         infoWindowRef.current = infoWindow;
@@ -191,15 +188,16 @@ export default function MapView({
       attractionMarkersRef.current = [];
       userMarkerRef.current = null;
 
+      const gcjLocation = wgs84ToGcj02(userLocation);
       const map = new AMap.Map(containerRef.current, {
         zoom: 15,
-        center: userLocation,
+        center: gcjLocation,
       });
       mapRef.current = map;
       map.on('click', closeInfoWindow);
 
       userMarkerRef.current = new AMap.Marker({
-        position: userLocation,
+        position: gcjLocation,
         content:
           '<div style="background:#1a73e8;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 8px rgba(26,115,232,0.5),0 2px 6px rgba(0,0,0,0.2);"></div>',
         offset: new AMap.Pixel(-10, -10),
@@ -211,15 +209,16 @@ export default function MapView({
     }
 
     // Happy path: create map directly at GPS location
+    const gcjLocation = wgs84ToGcj02(userLocation);
     const map = new AMap.Map(containerRef.current, {
       zoom: 15,
-      center: userLocation,
+      center: gcjLocation,
     });
     mapRef.current = map;
     map.on('click', closeInfoWindow);
 
     userMarkerRef.current = new AMap.Marker({
-      position: userLocation,
+      position: gcjLocation,
       content:
         '<div style="background:#1a73e8;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 8px rgba(26,115,232,0.5),0 2px 6px rgba(0,0,0,0.2);"></div>',
       offset: new AMap.Pixel(-10, -10),
@@ -238,7 +237,7 @@ export default function MapView({
       const AMap = amapRef.current;
       const map = new AMap.Map(containerRef.current, {
         zoom: 15,
-        center: [116.397428, 39.908723],
+        center: wgs84ToGcj02([116.397428, 39.908723]),
       });
       mapRef.current = map;
       map.on('click', closeInfoWindow);
@@ -258,7 +257,7 @@ export default function MapView({
   // Keep user marker in sync when location updates after initial creation
   useEffect(() => {
     if (!mapRef.current || !userLocation || !userMarkerRef.current) return;
-    userMarkerRef.current.setPosition(userLocation);
+    userMarkerRef.current.setPosition(wgs84ToGcj02(userLocation));
   }, [userLocation]);
 
   // Handle area selection: zoom to area bounds and show attraction markers
@@ -279,7 +278,8 @@ export default function MapView({
       closeInfoWindow();
 
       // Zoom to area bounds based on radius
-      const center = new window.AMap.LngLat(area.center[0], area.center[1]);
+      const gcjCenter = wgs84ToGcj02(area.center);
+      const center = new window.AMap.LngLat(gcjCenter[0], gcjCenter[1]);
       // Approximate: radius in meters → map zoom
       const zoomByRadius = (r: number) => {
         if (r <= 500) return 15;
@@ -298,7 +298,7 @@ export default function MapView({
 
       // Zoom back out to show all areas
       if (userLocation) {
-        map.setZoomAndCenter(13, userLocation);
+        map.setZoomAndCenter(13, wgs84ToGcj02(userLocation));
       }
     }
   }, [selectedAreaId]);
