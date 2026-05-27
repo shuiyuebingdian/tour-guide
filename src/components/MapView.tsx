@@ -15,6 +15,20 @@ interface MapViewProps {
   onAttractionClick: (attraction: Attraction) => void;
 }
 
+const AREA_COLORS: Record<string, string> = {
+  gugong: '#c62828',
+  yiheyuan: '#2e7d32',
+  tiantan: '#1565c0',
+  badaling: '#e65100',
+};
+
+function markerHtml(color: string, isOverview: boolean): string {
+  const size = isOverview ? 18 : 12;
+  const border = isOverview ? '3px solid #fff' : '2px solid #fff';
+  const star = isOverview ? '★' : '';
+  return `<div style="background:${color};width:${size}px;height:${size}px;border-radius:50%;border:${border};box-shadow:0 0 6px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;">${star}</div>`;
+}
+
 export default function MapView({
   userLocation,
   attractions,
@@ -74,9 +88,13 @@ export default function MapView({
     markersRef.current.forEach((m) => map.remove(m));
     markersRef.current = [];
     attractions.forEach((attraction) => {
+      const color = AREA_COLORS[attraction.areaId] || '#1a73e8';
+      const isOverview = attraction.id.endsWith('-overview');
       const marker = new AMap.Marker({
         position: attraction.location,
         title: attraction.name,
+        content: markerHtml(color, isOverview),
+        offset: new AMap.Pixel(isOverview ? -11 : -8, isOverview ? -11 : -8),
       });
       marker.on('click', () => {
         if (infoWindowRef.current) {
