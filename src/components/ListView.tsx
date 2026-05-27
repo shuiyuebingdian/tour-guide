@@ -9,6 +9,8 @@ interface ListViewProps {
   attractions: Attraction[];
   onAttractionClick: (attraction: Attraction) => void;
   onClearHistory: () => void;
+  triggerDistance: number;
+  onTriggerDistanceChange: (d: number) => void;
 }
 
 export default function ListView({
@@ -16,6 +18,8 @@ export default function ListView({
   attractions,
   onAttractionClick,
   onClearHistory,
+  triggerDistance,
+  onTriggerDistanceChange,
 }: ListViewProps) {
   const [search, setSearch] = useState('');
   const [expandedCities, setExpandedCities] = useState<Set<string>>(new Set());
@@ -160,6 +164,23 @@ export default function ListView({
       </div>
 
       <div className="list-footer">
+        <div className="list-settings">
+          <label className="setting-label">
+            <span>触发距离</span>
+            <select
+              className="setting-select"
+              value={triggerDistance}
+              onChange={(e) => onTriggerDistanceChange(Number(e.target.value))}
+            >
+              <option value={10}>10m</option>
+              <option value={20}>20m</option>
+              <option value={30}>30m</option>
+              <option value={50}>50m</option>
+              <option value={100}>100m</option>
+              <option value={200}>200m</option>
+            </select>
+          </label>
+        </div>
         <p>💡 共 {attractions.length} 个讲解，覆盖 {cities.length} 个城市 · {totalAreas} 个景区</p>
         <button className="btn-clear-history" onClick={onClearHistory}>
           清除已听记录

@@ -25,6 +25,18 @@ describe('isNearby', () => {
     const attraction = { location: [116.397, 39.915] as number[], radius: 50 };
     expect(isNearby([116.397, 39.920], attraction)).toBe(false);
   });
+
+  it('uses triggerDistance override when provided', () => {
+    const attraction = { location: [116.397, 39.915] as number[], radius: 10 };
+    // Outside attraction radius but within trigger distance
+    expect(isNearby([116.397, 39.9151], attraction, 200)).toBe(true);
+  });
+
+  it('treats outside triggerDistance as not nearby', () => {
+    const attraction = { location: [116.397, 39.915] as number[], radius: 100 };
+    // Inside attraction radius but outside trigger distance
+    expect(isNearby([116.397, 39.9151], attraction, 1)).toBe(false);
+  });
 });
 
 describe('sortByDistance', () => {

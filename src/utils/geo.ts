@@ -22,8 +22,12 @@ export function haversineDistance(
 export function isNearby(
   userLocation: number[],
   attraction: { location: number[]; radius: number },
+  triggerDistance?: number,
 ): boolean {
-  return haversineDistance(userLocation, attraction.location) <= attraction.radius;
+  return (
+    haversineDistance(userLocation, attraction.location) <=
+    (triggerDistance ?? attraction.radius)
+  );
 }
 
 export function sortByDistance(

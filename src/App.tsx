@@ -6,6 +6,7 @@ import { useProximityAlert, clearAlertHistory } from './hooks/useProximityAlert'
 import { clearPlayHistory } from './hooks/usePlayHistory';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { useAutoPlayPreference } from './hooks/useAutoPlayPreference';
+import { useTriggerDistance } from './hooks/useTriggerDistance';
 import NetworkToast from './components/NetworkToast';
 import { haversineDistance } from './utils/geo';
 import MapView from './components/MapView';
@@ -37,7 +38,8 @@ function App() {
   const [view, setView] = useState<View>('map');
   const [selectedAttraction, setSelectedAttraction] = useState<Attraction | null>(null);
   const { location, error, refresh, clearError } = useGeolocation();
-  const { nearby, unplayedNearby } = useNearbyAttractions(location, allAttractions);
+  const [triggerDistance, setTriggerDistance] = useTriggerDistance();
+  const { nearby, unplayedNearby } = useNearbyAttractions(location, allAttractions, triggerDistance);
 
   const handleProximityPlay = useCallback((attraction: Attraction) => {
     setSelectedAttraction(attraction);
@@ -180,6 +182,8 @@ function App() {
                 attractions={allAttractions}
                 onAttractionClick={handleAttractionClick}
                 onClearHistory={handleClearHistory}
+                triggerDistance={triggerDistance}
+                onTriggerDistanceChange={setTriggerDistance}
               />
             )}
           </main>

@@ -6,14 +6,17 @@ import { usePlayHistory } from './usePlayHistory';
 export function useNearbyAttractions(
   userLocation: number[] | null,
   allAttractions: Attraction[],
+  triggerDistance?: number,
 ) {
   const { hasPlayedToday } = usePlayHistory();
 
   const nearby = useMemo(() => {
     if (!userLocation) return [];
-    const inRange = allAttractions.filter((a) => isNearby(userLocation, a));
+    const inRange = allAttractions.filter((a) =>
+      isNearby(userLocation, a, triggerDistance),
+    );
     return sortByDistance(userLocation, inRange);
-  }, [userLocation, allAttractions]);
+  }, [userLocation, allAttractions, triggerDistance]);
 
   const unplayedNearby = useMemo(() => {
     return nearby.filter((a) => !hasPlayedToday(a.id));

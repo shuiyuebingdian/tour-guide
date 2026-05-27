@@ -159,6 +159,28 @@
   margin: 0 0 8px 0;
 }
 
+.list-settings {
+  margin-bottom: 10px;
+}
+
+.setting-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+.setting-select {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #333;
+  background: white;
+  cursor: pointer;
+}
+
 .btn-clear-history {
   padding: 6px 16px;
   background: none;
