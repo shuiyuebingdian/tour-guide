@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => ({
   base: mode === 'production' ? './' : '/',
   test: {
     environment: 'jsdom',
+    setupFiles: ['./src/test-setup.ts'],
   },
   plugins: [
     react(),

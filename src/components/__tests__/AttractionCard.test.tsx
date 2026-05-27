@@ -37,7 +37,7 @@ describe('AttractionCard', () => {
         onClick={onClick}
       />,
     );
-    fireEvent.click(screen.getAllByText('太和殿')[1]?.closest('div')!);
+    fireEvent.click(screen.getByText('太和殿').closest('.attraction-card')!);
     expect(onClick).toHaveBeenCalledWith(mockAttraction);
   });
 
