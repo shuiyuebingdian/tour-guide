@@ -44,5 +44,9 @@ export function useGeolocation() {
     setState((s) => ({ ...s, loading: true, error: null }));
   }, []);
 
-  return { ...state, refresh };
+  const clearError = useCallback(() => {
+    setState((s) => ({ ...s, error: null }));
+  }, []);
+
+  return { ...state, refresh, clearError };
 }
