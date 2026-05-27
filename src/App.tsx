@@ -1,8 +1,10 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import type { Attraction } from './types';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useNearbyAttractions } from './hooks/useNearbyAttractions';
 import { useProximityAlert } from './hooks/useProximityAlert';
+import { useNetworkStatus } from './hooks/useNetworkStatus';
+import NetworkToast from './components/NetworkToast';
 import { haversineDistance } from './utils/geo';
 import MapView from './components/MapView';
 import AttractionCard from './components/AttractionCard';
@@ -42,6 +44,22 @@ function App() {
 
   const { status: alertStatus, target: alertTarget, dismiss, markTriggered } =
     useProximityAlert({ nearestUnplayed, onPlay: handleProximityPlay });
+
+  const { isOnline, wasOffline } = useNetworkStatus();
+  const [networkToast, setNetworkToast] = useState<'offline' | 'online' | null>(null);
+  const initialOfflineRef = useRef(true);
+
+  useEffect(() => {
+    if (initialOfflineRef.current) {
+      initialOfflineRef.current = false;
+      return;
+    }
+    if (!isOnline) {
+      setNetworkToast('offline');
+    } else if (wasOffline) {
+      setNetworkToast('online');
+    }
+  }, [isOnline, wasOffline]);
 
   const displayAttractions = useMemo(() => {
     if (nearby.length > 0) return nearby;
@@ -87,6 +105,12 @@ function App() {
                   onAttractionClick={handleAttractionClick}
                 />
                 <div className="bottom-overlay">
+                  {networkToast && (
+                    <NetworkToast
+                      type={networkToast}
+                      onDone={() => setNetworkToast(null)}
+                    />
+                  )}
                   {alertStatus === 'alerting' && alertTarget && (
                     <ProximityAlert
                       attraction={alertTarget}
