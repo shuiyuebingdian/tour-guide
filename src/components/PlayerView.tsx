@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import type { Attraction } from '../types';
 import { useSpeech } from '../hooks/useSpeech';
 import { usePlayHistory } from '../hooks/usePlayHistory';
+import { useRatePreference } from '../hooks/useRatePreference';
 import './PlayerView.css';
 
 interface PlayerViewProps {
@@ -16,7 +17,7 @@ export default function PlayerView({
   onComplete,
 }: PlayerViewProps) {
   const [segmentIndex, setSegmentIndex] = useState(0);
-  const [rate, setRate] = useState(1.0);
+  const [rate, setRate] = useRatePreference();
   const { markPlayed } = usePlayHistory();
   const speakRef = useRef<(text: string) => void>(() => {});
   const segments = attraction.segments;
