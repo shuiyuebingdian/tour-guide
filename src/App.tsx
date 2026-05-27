@@ -4,6 +4,7 @@ import { useGeolocation } from './hooks/useGeolocation';
 import { useNearbyAttractions } from './hooks/useNearbyAttractions';
 import { useProximityAlert } from './hooks/useProximityAlert';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
+import { useAutoPlayPreference } from './hooks/useAutoPlayPreference';
 import NetworkToast from './components/NetworkToast';
 import { haversineDistance } from './utils/geo';
 import MapView from './components/MapView';
@@ -44,6 +45,15 @@ function App() {
 
   const { status: alertStatus, target: alertTarget, dismiss, markTriggered } =
     useProximityAlert({ unplayedNearby, onPlay: handleProximityPlay });
+
+  const [autoPlay, setAutoPlay] = useAutoPlayPreference();
+
+  // Auto-trigger play when autoPlay is enabled
+  useEffect(() => {
+    if (autoPlay && alertStatus === 'alerting' && alertTarget) {
+      markTriggered();
+    }
+  }, [autoPlay, alertStatus, alertTarget, markTriggered]);
 
   const { isOnline, wasOffline } = useNetworkStatus();
   const [networkToast, setNetworkToast] = useState<'offline' | 'online' | null>(null);
@@ -118,8 +128,10 @@ function App() {
                         location || DEFAULT_CENTER,
                         alertTarget.location,
                       )}
+                      autoPlay={autoPlay}
                       onPlay={markTriggered}
                       onDismiss={dismiss}
+                      onAutoPlayChange={setAutoPlay}
                     />
                   )}
                   {displayAttractions.length > 0 && (

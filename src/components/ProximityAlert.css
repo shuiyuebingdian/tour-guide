@@ -87,3 +87,24 @@
 .proximity-alert-close:active {
   background: rgba(255, 255, 255, 0.15);
 }
+
+.proximity-alert-autoplay {
+  margin-top: 6px;
+  text-align: right;
+}
+
+.proximity-alert-autoplay label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #999;
+  cursor: pointer;
+}
+
+.proximity-alert-autoplay input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: #1a73e8;
+}

@@ -4,15 +4,19 @@ import './ProximityAlert.css';
 interface ProximityAlertProps {
   attraction: Attraction;
   distance: number;
+  autoPlay: boolean;
   onPlay: (attraction: Attraction) => void;
   onDismiss: () => void;
+  onAutoPlayChange: (value: boolean) => void;
 }
 
 export default function ProximityAlert({
   attraction,
   distance,
+  autoPlay,
   onPlay,
   onDismiss,
+  onAutoPlayChange,
 }: ProximityAlertProps) {
   const distText =
     distance < 1000
@@ -42,6 +46,16 @@ export default function ProximityAlert({
             ✕
           </button>
         </div>
+      </div>
+      <div className="proximity-alert-autoplay">
+        <label>
+          <input
+            type="checkbox"
+            checked={autoPlay}
+            onChange={(e) => onAutoPlayChange(e.target.checked)}
+          />
+          <span>下次自动进入讲解</span>
+        </label>
       </div>
     </div>
   );

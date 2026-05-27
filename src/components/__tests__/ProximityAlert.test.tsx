@@ -19,8 +19,10 @@ describe('ProximityAlert', () => {
       <ProximityAlert
         attraction={mockAttraction}
         distance={200}
+        autoPlay={false}
         onPlay={vi.fn()}
         onDismiss={vi.fn()}
+        onAutoPlayChange={vi.fn()}
       />,
     );
     expect(screen.getByText('太和殿')).toBeTruthy();
@@ -32,8 +34,10 @@ describe('ProximityAlert', () => {
       <ProximityAlert
         attraction={mockAttraction}
         distance={1500}
+        autoPlay={false}
         onPlay={vi.fn()}
         onDismiss={vi.fn()}
+        onAutoPlayChange={vi.fn()}
       />,
     );
     expect(screen.getByText(/1\.5km/)).toBeTruthy();
@@ -45,8 +49,10 @@ describe('ProximityAlert', () => {
       <ProximityAlert
         attraction={mockAttraction}
         distance={50}
+        autoPlay={false}
         onPlay={onPlay}
         onDismiss={vi.fn()}
+        onAutoPlayChange={vi.fn()}
       />,
     );
     fireEvent.click(screen.getByText('开始讲解'));
@@ -59,8 +65,10 @@ describe('ProximityAlert', () => {
       <ProximityAlert
         attraction={mockAttraction}
         distance={50}
+        autoPlay={false}
         onPlay={vi.fn()}
         onDismiss={onDismiss}
+        onAutoPlayChange={vi.fn()}
       />,
     );
     fireEvent.click(screen.getByLabelText('关闭'));
