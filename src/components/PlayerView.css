@@ -60,6 +60,11 @@
   color: #333;
 }
 
+.player-text mark.text-read {
+  background: linear-gradient(180deg, transparent 60%, #f9a825 60%);
+  color: #333;
+}
+
 .player-segment-indicator {
   display: flex;
   justify-content: center;

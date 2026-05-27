@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import type { Attraction } from '../types';
 import { useSpeech } from '../hooks/useSpeech';
 import { usePlayHistory } from '../hooks/usePlayHistory';
@@ -16,42 +16,47 @@ export default function PlayerView({
   onComplete,
 }: PlayerViewProps) {
   const [segmentIndex, setSegmentIndex] = useState(0);
-  const [rate, setRate] = useState(0.9);
+  const [rate, setRate] = useState(1.0);
   const { markPlayed } = usePlayHistory();
+  const speakRef = useRef<(text: string) => void>(() => {});
+  const segments = attraction.segments;
 
   const handleSegmentEnd = useCallback(() => {
-    if (segmentIndex < attraction.segments.length - 1) {
-      setSegmentIndex((i) => i + 1);
-    } else {
-      markPlayed(attraction.id);
-      onComplete();
-    }
-  }, [segmentIndex, attraction, markPlayed, onComplete]);
+    setSegmentIndex((i) => {
+      if (i < segments.length - 1) {
+        const next = i + 1;
+        // Use setTimeout to let React process the state update first
+        setTimeout(() => speakRef.current(segments[next].text), 0);
+        return next;
+      } else {
+        markPlayed(attraction.id);
+        onComplete();
+        return i;
+      }
+    });
+  }, [segments, attraction.id, markPlayed, onComplete]);
 
-  const { state, speak, pause, resume, stop } = useSpeech({
+  const { state: speechState, speak, pause, resume, stop, currentCharIndex } = useSpeech({
     rate,
     onEnd: handleSegmentEnd,
   });
 
-  const segment = attraction.segments[segmentIndex];
+  speakRef.current = speak;
 
-  useEffect(() => {
-    if (segment) {
-      speak(segment.text);
-    }
-    return () => { stop(); };
-  }, [segmentIndex]);
+  const segment = segments[segmentIndex];
 
   const handlePlayPause = () => {
-    if (state === 'playing') pause();
-    else if (state === 'paused') resume();
+    if (speechState === 'playing') pause();
+    else if (speechState === 'paused') resume();
     else speak(segment.text);
   };
 
   const handleNext = () => {
     stop();
-    if (segmentIndex < attraction.segments.length - 1) {
-      setSegmentIndex((i) => i + 1);
+    if (segmentIndex < segments.length - 1) {
+      const next = segmentIndex + 1;
+      setSegmentIndex(next);
+      setTimeout(() => speakRef.current(segments[next].text), 0);
     } else {
       markPlayed(attraction.id);
       onComplete();
@@ -61,7 +66,9 @@ export default function PlayerView({
   const handlePrev = () => {
     stop();
     if (segmentIndex > 0) {
-      setSegmentIndex((i) => i - 1);
+      const prev = segmentIndex - 1;
+      setSegmentIndex(prev);
+      setTimeout(() => speakRef.current(segments[prev].text), 0);
     }
   };
 
@@ -84,11 +91,20 @@ export default function PlayerView({
       </div>
 
       <div className="player-text">
-        <p>{segment.text}</p>
+        <p>
+          {speechState !== 'idle' ? (
+            <>
+              <mark className="text-read">{segment.text.slice(0, currentCharIndex)}</mark>
+              {segment.text.slice(currentCharIndex)}
+            </>
+          ) : (
+            segment.text
+          )}
+        </p>
       </div>
 
       <div className="player-segment-indicator">
-        {attraction.segments.map((_, i) => (
+        {segments.map((_, i) => (
           <span
             key={i}
             className={`dot ${i === segmentIndex ? 'dot-active' : ''} ${i < segmentIndex ? 'dot-done' : ''}`}
@@ -99,7 +115,7 @@ export default function PlayerView({
       <div className="player-controls">
         <button onClick={handlePrev} disabled={segmentIndex === 0}>⏮</button>
         <button className="btn-play" onClick={handlePlayPause}>
-          {state === 'playing' ? '⏸' : '▶'}
+          {speechState === 'playing' ? '⏸' : '▶'}
         </button>
         <button onClick={handleNext}>⏭</button>
       </div>
