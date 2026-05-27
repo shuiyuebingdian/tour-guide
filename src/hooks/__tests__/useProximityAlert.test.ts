@@ -53,14 +53,6 @@ describe('useProximityAlert', () => {
     expect(navigator.vibrate).toHaveBeenCalledWith(200);
   });
 
-  it('stays idle when nearestUnplayed is null', () => {
-    const onPlay = vi.fn();
-    const { result } = renderHook(() =>
-      useProximityAlert({ nearestUnplayed: null, onPlay }),
-    );
-    expect(result.current.status).toBe('idle');
-  });
-
   it('dismiss sets status to dismissed and records alert', () => {
     const onPlay = vi.fn();
     const { result, rerender } = renderHook(
@@ -73,7 +65,7 @@ describe('useProximityAlert', () => {
 
     expect(result.current.status).toBe('dismissed');
 
-    // verify localStorage record
+    // verify localStorage record (recorded immediately by the effect on alert)
     const raw = localStorage.getItem('tour-guide-alerts');
     const data = JSON.parse(raw!);
     const today = new Date().toISOString().slice(0, 10);
@@ -140,7 +132,7 @@ describe('useProximityAlert', () => {
     expect(onPlay).toHaveBeenCalledWith(mockAttraction);
     expect(result.current.status).toBe('idle');
 
-    // verify localStorage record
+    // verify localStorage record (recorded immediately by the effect on alert)
     const raw = localStorage.getItem('tour-guide-alerts');
     const data = JSON.parse(raw!);
     const today = new Date().toISOString().slice(0, 10);
@@ -162,5 +154,50 @@ describe('useProximityAlert', () => {
     );
 
     expect(result.current.status).toBe('idle');
+  });
+
+  it('does not re-alert after leave and return (alert recorded immediately on entry)', () => {
+    const onPlay = vi.fn();
+    const { result, rerender } = renderHook(
+      ({ nearestUnplayed }) => useProximityAlert({ nearestUnplayed, onPlay }),
+      { initialProps: { nearestUnplayed: null as Attraction | null } },
+    );
+
+    // Enter proximity → alert fires, recordAlert called immediately in effect
+    rerender({ nearestUnplayed: mockAttraction });
+    expect(result.current.status).toBe('alerting');
+
+    // Verify localStorage record was created without user interaction
+    const raw = localStorage.getItem('tour-guide-alerts');
+    const data = JSON.parse(raw!);
+    const today = new Date().toISOString().slice(0, 10);
+    expect(data[today]).toContain('gugong-taihedian');
+
+    // User leaves (nearestUnplayed becomes null)
+    rerender({ nearestUnplayed: null });
+    expect(result.current.status).toBe('idle');
+
+    // User returns to same attraction — should NOT re-alert
+    rerender({ nearestUnplayed: mockAttraction });
+    expect(result.current.status).toBe('idle');
+  });
+
+  it('dismiss is no-op when target is null', () => {
+    const onPlay = vi.fn();
+    const { result } = renderHook(() =>
+      useProximityAlert({ nearestUnplayed: null, onPlay }),
+    );
+    act(() => result.current.dismiss());
+    expect(result.current.status).toBe('idle');
+  });
+
+  it('markTriggered is no-op when target is null', () => {
+    const onPlay = vi.fn();
+    const { result } = renderHook(() =>
+      useProximityAlert({ nearestUnplayed: null, onPlay }),
+    );
+    act(() => result.current.markTriggered());
+    expect(result.current.status).toBe('idle');
+    expect(onPlay).not.toHaveBeenCalled();
   });
 });

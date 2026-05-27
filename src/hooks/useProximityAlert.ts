@@ -27,6 +27,15 @@ function recordAlert(id: string): void {
     if (!data[today].includes(id)) {
       data[today].push(id);
     }
+    // Clean up keys older than 7 days
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 7);
+    const cutoffStr = cutoff.toISOString().slice(0, 10);
+    for (const key of Object.keys(data)) {
+      if (key < cutoffStr) {
+        delete data[key];
+      }
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch {
     // ignore quota errors
@@ -49,9 +58,15 @@ export function useProximityAlert({
   const dismissedIdRef = useRef<string | null>(null);
   const onPlayRef = useRef(onPlay);
   onPlayRef.current = onPlay;
+  const statusRef = useRef(status);
+  statusRef.current = status;
+  const targetRef = useRef(target);
+  targetRef.current = target;
 
   useEffect(() => {
-    if (!nearestUnplayed) {
+    const id = nearestUnplayed?.id ?? null;
+
+    if (id === null) {
       setStatus('idle');
       setTarget(null);
       dismissedIdRef.current = null;
@@ -59,14 +74,14 @@ export function useProximityAlert({
     }
 
     // Already alerted today — never re-alert
-    if (hasAlertedToday(nearestUnplayed.id)) {
+    if (hasAlertedToday(id)) {
       return;
     }
 
     // Still dismissed for this same attraction — don't re-alert
     if (
-      status === 'dismissed' &&
-      dismissedIdRef.current === nearestUnplayed.id
+      statusRef.current === 'dismissed' &&
+      dismissedIdRef.current === id
     ) {
       return;
     }
@@ -74,25 +89,25 @@ export function useProximityAlert({
     // Previous dismissed target no longer nearest — clear ref
     if (
       dismissedIdRef.current !== null &&
-      dismissedIdRef.current !== nearestUnplayed.id
+      dismissedIdRef.current !== id
     ) {
       dismissedIdRef.current = null;
     }
 
     // No existing alert for this target — alert!
-    if (target?.id !== nearestUnplayed.id || status !== 'alerting') {
+    if (targetRef.current?.id !== id || statusRef.current !== 'alerting') {
       setTarget(nearestUnplayed);
       setStatus('alerting');
+      recordAlert(id);
 
       if (navigator.vibrate) {
         navigator.vibrate(200);
       }
     }
-  }, [nearestUnplayed]);
+  }, [nearestUnplayed?.id ?? null]);
 
   const dismiss = useCallback(() => {
     if (target) {
-      recordAlert(target.id);
       dismissedIdRef.current = target.id;
       setStatus('dismissed');
     }
@@ -100,7 +115,6 @@ export function useProximityAlert({
 
   const markTriggered = useCallback(() => {
     if (target) {
-      recordAlert(target.id);
       setStatus('idle');
       setTarget(null);
       dismissedIdRef.current = null;
@@ -108,5 +122,5 @@ export function useProximityAlert({
     }
   }, [target]);
 
-  return { status, target, dismiss, markTriggered } as const;
+  return { status, target, dismiss, markTriggered };
 }
