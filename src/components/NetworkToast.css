@@ -1,0 +1,55 @@
+.network-toast {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  color: white;
+  font-size: 13px;
+  animation: toastSlideUp 0.3s ease-out;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+@keyframes toastSlideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.toast-offline {
+  background: #ff9800;
+}
+
+.toast-online {
+  background: #4caf50;
+}
+
+.network-toast-icon {
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.network-toast-text {
+  flex: 1;
+}
+
+.network-toast-close {
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  background: none;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  flex-shrink: 0;
+}
