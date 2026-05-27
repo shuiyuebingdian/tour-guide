@@ -249,6 +249,51 @@ describe('useProximityAlert', () => {
     expect(result.current.status).toBe('idle');
     expect(onPlay).not.toHaveBeenCalled();
   });
+
+  it('prioritizes overview attractions over individual ones', () => {
+    const overview: Attraction = {
+      id: 'gugong-overview',
+      name: '故宫概览',
+      areaId: 'gugong',
+      location: [116.397, 39.916],
+      radius: 500,
+      image: '',
+      segments: [{ text: '故宫概览讲解' }],
+    };
+
+    const onPlay = vi.fn();
+    const list = [mockAttraction, overview]; // individual is closer but overview should win
+    const { result } = renderHook(
+      ({ unplayedNearby }) => useProximityAlert({ unplayedNearby, onPlay }),
+      { initialProps: { unplayedNearby: list } },
+    );
+
+    expect(result.current.status).toBe('alerting');
+    expect(result.current.target).toBe(overview);
+  });
+
+  it('falls through to individual after overview is dismissed', () => {
+    const overview: Attraction = {
+      id: 'gugong-overview',
+      name: '故宫概览',
+      areaId: 'gugong',
+      location: [116.397, 39.916],
+      radius: 500,
+      image: '',
+      segments: [{ text: '故宫概览讲解' }],
+    };
+
+    const onPlay = vi.fn();
+    const list = [mockAttraction, overview];
+    const { result } = renderHook(
+      ({ unplayedNearby }) => useProximityAlert({ unplayedNearby, onPlay }),
+      { initialProps: { unplayedNearby: list } },
+    );
+
+    expect(result.current.target).toBe(overview);
+    act(() => result.current.dismiss());
+    expect(result.current.target).toBe(mockAttraction);
+  });
 });
 
 describe('clearAlertHistory', () => {

@@ -72,14 +72,17 @@ export function useProximityAlert({
   const lastRecordedRef = useRef<string | null>(null);
 
   const candidate = useMemo(() => {
-    return (
-      unplayedNearby.find((a) => {
-        // Allow the just-recorded id through to prevent feedback loop
-        if (hasAlertedToday(a.id) && a.id !== lastRecordedRef.current) return false;
-        if (dismissedId === a.id) return false;
-        return true;
-      }) ?? null
-    );
+    const isEligible = (a: Attraction) => {
+      if (hasAlertedToday(a.id) && a.id !== lastRecordedRef.current) return false;
+      if (dismissedId === a.id) return false;
+      return true;
+    };
+
+    // Prioritize scenic area overview first, then individual attractions
+    const overview = unplayedNearby.find((a) => a.id.endsWith('-overview') && isEligible(a));
+    if (overview) return overview;
+
+    return unplayedNearby.find(isEligible) ?? null;
   }, [unplayedNearby, dismissedId]);
 
   useEffect(() => {
