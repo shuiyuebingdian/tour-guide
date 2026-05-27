@@ -19,6 +19,9 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      VITE_AMAP_KEY: 089304f00db3546bb73a3c8294c6733a
+      VITE_AMAP_SECURITY_CODE: ac84cb27cdf872f3b8a0c644c7272351
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
