@@ -24,6 +24,14 @@ function savePlayedSet(set: Set<string>): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+export function clearPlayHistory(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 export function usePlayHistory() {
   const hasPlayedToday = useCallback((id: string): boolean => {
     return getPlayedSet().has(id);
@@ -35,10 +43,14 @@ export function usePlayHistory() {
     savePlayedSet(set);
   }, []);
 
+  const clearPlayed = useCallback((): void => {
+    clearPlayHistory();
+  }, []);
+
   const filterUnplayed = useCallback((ids: string[]): string[] => {
     const set = getPlayedSet();
     return ids.filter((id) => !set.has(id));
   }, []);
 
-  return { hasPlayedToday, markPlayed, filterUnplayed };
+  return { hasPlayedToday, markPlayed, clearPlayed, filterUnplayed };
 }

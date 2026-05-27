@@ -41,6 +41,14 @@ function recordAlert(id: string): void {
   }
 }
 
+export function clearAlertHistory(): void {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}
+
 export type ProximityStatus = 'idle' | 'alerting' | 'dismissed';
 
 interface UseProximityAlertOptions {

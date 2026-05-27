@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useProximityAlert } from '../useProximityAlert';
+import { useProximityAlert, clearAlertHistory } from '../useProximityAlert';
 import type { Attraction } from '../../types';
 
 const mockAttraction: Attraction = {
@@ -248,5 +248,17 @@ describe('useProximityAlert', () => {
     act(() => result.current.markTriggered());
     expect(result.current.status).toBe('idle');
     expect(onPlay).not.toHaveBeenCalled();
+  });
+});
+
+describe('clearAlertHistory', () => {
+  it('removes the alert history key from localStorage', () => {
+    const today = new Date().toISOString().slice(0, 10);
+    localStorage.setItem(
+      'tour-guide-alerts',
+      JSON.stringify({ [today]: ['gugong-taihedian'] }),
+    );
+    clearAlertHistory();
+    expect(localStorage.getItem('tour-guide-alerts')).toBeNull();
   });
 });

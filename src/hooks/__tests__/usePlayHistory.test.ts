@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { usePlayHistory } from '../usePlayHistory';
+import { usePlayHistory, clearPlayHistory } from '../usePlayHistory';
 
 beforeEach(() => {
   localStorage.clear();
@@ -23,5 +23,21 @@ describe('usePlayHistory', () => {
     act(() => result.current.markPlayed('a'));
     const remaining = result.current.filterUnplayed(['a', 'b', 'c']);
     expect(remaining).toEqual(['b', 'c']);
+  });
+
+  it('clears all played records', () => {
+    const { result } = renderHook(() => usePlayHistory());
+    act(() => result.current.markPlayed('gugong-taihedian'));
+    expect(result.current.hasPlayedToday('gugong-taihedian')).toBe(true);
+    act(() => result.current.clearPlayed());
+    expect(result.current.hasPlayedToday('gugong-taihedian')).toBe(false);
+  });
+});
+
+describe('clearPlayHistory', () => {
+  it('removes the play history key from localStorage', () => {
+    localStorage.setItem('tour-guide-played', JSON.stringify({ '2026-05-27': ['a', 'b'] }));
+    clearPlayHistory();
+    expect(localStorage.getItem('tour-guide-played')).toBeNull();
   });
 });

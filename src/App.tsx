@@ -2,7 +2,8 @@ import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import type { Attraction } from './types';
 import { useGeolocation } from './hooks/useGeolocation';
 import { useNearbyAttractions } from './hooks/useNearbyAttractions';
-import { useProximityAlert } from './hooks/useProximityAlert';
+import { useProximityAlert, clearAlertHistory } from './hooks/useProximityAlert';
+import { clearPlayHistory } from './hooks/usePlayHistory';
 import { useNetworkStatus } from './hooks/useNetworkStatus';
 import { useAutoPlayPreference } from './hooks/useAutoPlayPreference';
 import NetworkToast from './components/NetworkToast';
@@ -96,6 +97,14 @@ function App() {
     setSelectedAttraction(null);
   }, []);
 
+  const handleClearHistory = useCallback(() => {
+    if (!window.confirm('确定要清除今天的已听记录吗？')) return;
+    clearPlayHistory();
+    clearAlertHistory();
+    // Force re-render so useNearbyAttractions and useProximityAlert pick up the cleared state
+    setSelectedAttraction(null);
+  }, []);
+
   return (
     <div className="app">
       {view === 'player' && selectedAttraction ? (
@@ -170,6 +179,7 @@ function App() {
                 cities={citiesData}
                 attractions={allAttractions}
                 onAttractionClick={handleAttractionClick}
+                onClearHistory={handleClearHistory}
               />
             )}
           </main>

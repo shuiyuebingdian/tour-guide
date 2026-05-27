@@ -1,21 +1,25 @@
 import { useState, useMemo } from 'react';
-import type { City, Attraction } from '../types';
+import type { City, ScenicArea, Attraction } from '../types';
 import SearchBar from './SearchBar';
+import areasData from '../data/areas.json';
 import './ListView.css';
 
 interface ListViewProps {
   cities: City[];
   attractions: Attraction[];
   onAttractionClick: (attraction: Attraction) => void;
+  onClearHistory: () => void;
 }
 
 export default function ListView({
   cities,
   attractions,
   onAttractionClick,
+  onClearHistory,
 }: ListViewProps) {
   const [search, setSearch] = useState('');
   const [expandedCities, setExpandedCities] = useState<Set<string>>(new Set());
+  const [expandedAreas, setExpandedAreas] = useState<Set<string>>(new Set());
 
   const filtered = useMemo(() => {
     if (!search.trim()) return null;
@@ -27,6 +31,25 @@ export default function ListView({
     );
   }, [search, attractions]);
 
+  const { areasByCity, attractionsByArea } = useMemo(() => {
+    const areaMap = new Map<string, ScenicArea[]>();
+    const attrMap = new Map<string, Attraction[]>();
+
+    areasData.forEach((area) => {
+      const list = areaMap.get(area.cityId) || [];
+      list.push(area);
+      areaMap.set(area.cityId, list);
+    });
+
+    attractions.forEach((a) => {
+      const list = attrMap.get(a.areaId) || [];
+      list.push(a);
+      attrMap.set(a.areaId, list);
+    });
+
+    return { areasByCity: areaMap, attractionsByArea: attrMap };
+  }, [attractions]);
+
   const toggleCity = (cityId: string) => {
     setExpandedCities((prev) => {
       const next = new Set(prev);
@@ -36,16 +59,16 @@ export default function ListView({
     });
   };
 
-  const attractionsByCity = useMemo(() => {
-    const map = new Map<string, Attraction[]>();
-    attractions.forEach((a) => {
-      const cityId = cities[0]?.id || 'beijing';
-      const list = map.get(cityId) || [];
-      list.push(a);
-      map.set(cityId, list);
+  const toggleArea = (areaId: string) => {
+    setExpandedAreas((prev) => {
+      const next = new Set(prev);
+      if (next.has(areaId)) next.delete(areaId);
+      else next.add(areaId);
+      return next;
     });
-    return map;
-  }, [attractions, cities]);
+  };
+
+  const totalAreas = areasData.length;
 
   return (
     <div className="list-view">
@@ -54,7 +77,7 @@ export default function ListView({
       <div className="list-content">
         {filtered ? (
           <div className="search-results">
-            <p className="result-count">找到 {filtered.length} 个景点</p>
+            <p className="result-count">找到 {filtered.length} 个结果</p>
             {filtered.map((a) => (
               <div
                 key={a.id}
@@ -68,8 +91,13 @@ export default function ListView({
           </div>
         ) : (
           cities.map((city) => {
-            const list = attractionsByCity.get(city.id) || [];
-            const expanded = expandedCities.has(city.id);
+            const cityAreas = areasByCity.get(city.id) || [];
+            const cityAttractionCount = cityAreas.reduce(
+              (sum, area) => sum + (attractionsByArea.get(area.id) || []).length,
+              0,
+            );
+            const cityExpanded = expandedCities.has(city.id);
+
             return (
               <div key={city.id} className="city-group">
                 <div
@@ -77,23 +105,52 @@ export default function ListView({
                   onClick={() => toggleCity(city.id)}
                 >
                   <span className="city-name">🏙️ {city.name}</span>
-                  <span className="city-count">{list.length} 个景点</span>
-                  <span className={`city-arrow ${expanded ? 'expanded' : ''}`}>
+                  <span className="city-count">
+                    {cityAreas.length} 个景区 · {cityAttractionCount} 个景点
+                  </span>
+                  <span className={`city-arrow ${cityExpanded ? 'expanded' : ''}`}>
                     ▾
                   </span>
                 </div>
-                {expanded && (
-                  <div className="city-attractions">
-                    {list.map((a) => (
-                      <div
-                        key={a.id}
-                        className="list-item"
-                        onClick={() => onAttractionClick(a)}
-                      >
-                        <span className="list-item-name">{a.name}</span>
-                        <span className="list-item-arrow">›</span>
-                      </div>
-                    ))}
+
+                {cityExpanded && (
+                  <div className="city-content">
+                    {cityAreas.map((area) => {
+                      const areaAttractions = attractionsByArea.get(area.id) || [];
+                      const areaExpanded = expandedAreas.has(area.id);
+
+                      return (
+                        <div key={area.id} className="area-group">
+                          <div
+                            className="area-header"
+                            onClick={() => toggleArea(area.id)}
+                          >
+                            <span className="area-name">🏛️ {area.name}</span>
+                            <span className="area-count">
+                              {areaAttractions.length} 个景点
+                            </span>
+                            <span className={`area-arrow ${areaExpanded ? 'expanded' : ''}`}>
+                              ▾
+                            </span>
+                          </div>
+
+                          {areaExpanded && (
+                            <div className="area-attractions">
+                              {areaAttractions.map((a) => (
+                                <div
+                                  key={a.id}
+                                  className="list-item"
+                                  onClick={() => onAttractionClick(a)}
+                                >
+                                  <span className="list-item-name">{a.name}</span>
+                                  <span className="list-item-arrow">›</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -103,7 +160,10 @@ export default function ListView({
       </div>
 
       <div className="list-footer">
-        💡 共 {attractions.length} 个景点，覆盖 {cities.length} 个城市
+        <p>💡 共 {attractions.length} 个讲解，覆盖 {cities.length} 个城市 · {totalAreas} 个景区</p>
+        <button className="btn-clear-history" onClick={onClearHistory}>
+          清除已听记录
+        </button>
       </div>
     </div>
   );
