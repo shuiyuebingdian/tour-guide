@@ -60,6 +60,15 @@ export default function MapView({
     };
   }, []);
 
+  const infoWindowRef = useRef<any>(null);
+
+  const closeInfoWindow = () => {
+    if (infoWindowRef.current) {
+      infoWindowRef.current.close();
+      infoWindowRef.current = null;
+    }
+  };
+
   // Shared helper: create attraction markers on a map
   const addAttractionMarkers = (map: any, AMap: any) => {
     markersRef.current.forEach((m) => map.remove(m));
@@ -69,7 +78,35 @@ export default function MapView({
         position: attraction.location,
         title: attraction.name,
       });
-      marker.on('click', () => onAttractionClickRef.current(attraction));
+      marker.on('click', () => {
+        if (infoWindowRef.current) {
+          infoWindowRef.current.close();
+          infoWindowRef.current = null;
+        }
+        const btnId = `iw-btn-${attraction.id}`;
+        const content = `<div style="padding:8px 12px;min-width:120px;text-align:center;">
+          <p style="margin:0 0 8px;font-size:14px;font-weight:600;color:#333;">${attraction.name}</p>
+          <button id="${btnId}" style="padding:6px 20px;background:#1a73e8;color:#fff;border:none;border-radius:14px;font-size:13px;cursor:pointer;">开始讲解</button>
+        </div>`;
+        const infoWindow = new AMap.InfoWindow({
+          content,
+          offset: new AMap.Pixel(0, -36),
+        });
+        infoWindow.open(map, marker.getPosition());
+        infoWindowRef.current = infoWindow;
+
+        // Bind click after InfoWindow DOM is rendered
+        setTimeout(() => {
+          const btn = document.getElementById(btnId);
+          if (btn) {
+            btn.onclick = () => {
+              infoWindow.close();
+              infoWindowRef.current = null;
+              onAttractionClickRef.current(attraction);
+            };
+          }
+        }, 0);
+      });
       map.add(marker);
       markersRef.current.push(marker);
     });
@@ -92,6 +129,7 @@ export default function MapView({
         center: userLocation,
       });
       mapRef.current = map;
+      map.on('click', closeInfoWindow);
 
       userMarkerRef.current = new AMap.Marker({
         position: userLocation,
@@ -111,6 +149,7 @@ export default function MapView({
       center: userLocation,
     });
     mapRef.current = map;
+    map.on('click', closeInfoWindow);
 
     userMarkerRef.current = new AMap.Marker({
       position: userLocation,
@@ -135,6 +174,7 @@ export default function MapView({
         center: [116.397428, 39.908723],
       });
       mapRef.current = map;
+      map.on('click', closeInfoWindow);
       addAttractionMarkers(map, AMap);
       // loading stays true — wait for Phase 2 to reveal
     }, 8000);
