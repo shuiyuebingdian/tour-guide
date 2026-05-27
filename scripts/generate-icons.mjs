@@ -1,5 +1,3 @@
-import { existsSync } from 'fs';
-
 const SVG_PATH = 'public/icon.svg';
 const OUT_DIR = 'public';
 
