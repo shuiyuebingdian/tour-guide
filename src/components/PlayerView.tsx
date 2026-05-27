@@ -1,8 +1,9 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import type { Attraction } from '../types';
 import { useSpeech } from '../hooks/useSpeech';
 import { usePlayHistory } from '../hooks/usePlayHistory';
 import { useRatePreference } from '../hooks/useRatePreference';
+import { useMediaSession } from '../hooks/useMediaSession';
 import './PlayerView.css';
 
 interface PlayerViewProps {
@@ -72,6 +73,46 @@ export default function PlayerView({
       setTimeout(() => speakRef.current(segments[prev].text), 0);
     }
   };
+
+  // Media Session: notification + bluetooth headset controls
+  const sessionInfo = useMemo(
+    () => ({
+      title: attraction.name,
+      artist: segment.heading || '随身导游',
+      state: speechState === 'playing' ? ('playing' as const) : ('paused' as const),
+    }),
+    [attraction.name, segment.heading, speechState],
+  );
+
+  const handleSessionPlay = useCallback(() => {
+    if (speechState === 'paused') resume();
+    else speak(segment.text);
+  }, [speechState, resume, speak, segment.text]);
+
+  const handleSessionPause = useCallback(() => {
+    if (speechState === 'playing') pause();
+  }, [speechState, pause]);
+
+  const handleSessionPrev = useCallback(() => {
+    if (segmentIndex > 0) handlePrev();
+  }, [segmentIndex, handlePrev]);
+
+  const handleSessionNext = useCallback(() => {
+    if (segmentIndex < segments.length - 1) handleNext();
+  }, [segmentIndex, segments.length, handleNext]);
+
+  const handleSessionStop = useCallback(() => {
+    stop();
+    onBack();
+  }, [stop, onBack]);
+
+  useMediaSession(sessionInfo, {
+    onPlay: handleSessionPlay,
+    onPause: handleSessionPause,
+    onPrevTrack: segmentIndex > 0 ? handleSessionPrev : null,
+    onNextTrack: segmentIndex < segments.length - 1 ? handleSessionNext : null,
+    onStop: handleSessionStop,
+  });
 
   return (
     <div className="player-view">
