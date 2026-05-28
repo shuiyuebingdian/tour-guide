@@ -4,7 +4,7 @@
     "name": "故宫博物院",
     "icon": "🏯",
     "cityId": "beijing",
-    "center": [116.397026, 39.917908],
+    "center": [116.390720, 39.916580],
     "radius": 800,
     "overview": "故宫，旧称紫禁城，是明清两代的皇家宫殿...",
     "overviewSegments": [
@@ -23,7 +23,7 @@
     "name": "颐和园",
     "icon": "🌿",
     "cityId": "beijing",
-    "center": [116.272, 39.999],
+    "center": [116.268900, 39.997500],
     "radius": 1500,
     "overview": "颐和园是清朝皇家园林，中国古典园林之首...",
     "overviewSegments": [
@@ -42,7 +42,7 @@
     "name": "天坛",
     "icon": "⛩️",
     "cityId": "beijing",
-    "center": [116.410, 39.882],
+    "center": [116.406390, 39.882220],
     "radius": 1200,
     "overview": "天坛是明清皇帝祭天祈谷的场所...",
     "overviewSegments": [
@@ -61,7 +61,7 @@
     "name": "八达岭长城",
     "icon": "🏰",
     "cityId": "beijing",
-    "center": [116.016, 40.353],
+    "center": [116.006940, 40.354170],
     "radius": 2000,
     "overview": "八达岭长城是明长城中保存最好、最具代表性的一段...",
     "overviewSegments": [
