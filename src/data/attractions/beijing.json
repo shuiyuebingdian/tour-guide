@@ -3,7 +3,7 @@
     "id": "gugong-wumen",
     "name": "午门",
     "areaId": "gugong",
-    "location": [116.391111, 39.912500],
+    "location": [116.397228, 39.913582],
     "radius": 30,
     "image": "",
     "segments": [
@@ -21,7 +21,7 @@
     "id": "gugong-taihedian",
     "name": "太和殿",
     "areaId": "gugong",
-    "location": [116.390556, 39.915833],
+    "location": [116.397056, 39.917321],
     "radius": 40,
     "image": "",
     "segments": [
@@ -39,7 +39,7 @@
     "id": "gugong-zhonghedian",
     "name": "中和殿",
     "areaId": "gugong",
-    "location": [116.390700, 39.917800],
+    "location": [116.397065, 39.917875],
     "radius": 25,
     "image": "",
     "segments": [
@@ -53,7 +53,7 @@
     "id": "gugong-baohedian",
     "name": "保和殿",
     "areaId": "gugong",
-    "location": [116.390700, 39.918400],
+    "location": [116.396973, 39.918430],
     "radius": 30,
     "image": "",
     "segments": [
@@ -67,7 +67,7 @@
     "id": "gugong-qianqinggong",
     "name": "乾清宫",
     "areaId": "gugong",
-    "location": [116.390500, 39.918800],
+    "location": [116.396919, 39.920238],
     "radius": 30,
     "image": "",
     "segments": [
@@ -80,7 +80,7 @@
     "id": "gugong-yuhuayuan",
     "name": "御花园",
     "areaId": "gugong",
-    "location": [116.391000, 39.920000],
+    "location": [116.396820, 39.921459],
     "radius": 40,
     "image": "",
     "segments": [
@@ -102,7 +102,7 @@
     "id": "gugong-shenwumen",
     "name": "神武门",
     "areaId": "gugong",
-    "location": [116.390417, 39.920944],
+    "location": [116.396786, 39.922305],
     "radius": 30,
     "image": "",
     "segments": [
@@ -120,7 +120,7 @@
     "id": "gugong-wenhuadian",
     "name": "文华殿",
     "areaId": "gugong",
-    "location": [116.399188, 39.915501],
+    "location": [116.399345, 39.915573],
     "radius": 30,
     "image": "",
     "segments": [
@@ -138,7 +138,7 @@
     "id": "gugong-wuyingdian",
     "name": "武英殿",
     "areaId": "gugong",
-    "location": [116.394558, 39.914975],
+    "location": [116.394593, 39.915441],
     "radius": 30,
     "image": "",
     "segments": [
@@ -156,7 +156,7 @@
     "id": "yiheyuan-renshoudian",
     "name": "仁寿殿",
     "areaId": "yiheyuan",
-    "location": [116.280460, 39.998260],
+    "location": [116.280059, 39.997750],
     "radius": 30,
     "image": "",
     "segments": [
@@ -174,7 +174,7 @@
     "id": "yiheyuan-changlang",
     "name": "长廊",
     "areaId": "yiheyuan",
-    "location": [116.271110, 39.997220],
+    "location": [116.271991, 39.997871],
     "radius": 50,
     "image": "",
     "segments": [
@@ -192,7 +192,7 @@
     "id": "yiheyuan-foxiangge",
     "name": "佛香阁",
     "areaId": "yiheyuan",
-    "location": [116.273959, 39.998956],
+    "location": [116.273946, 39.999089],
     "radius": 40,
     "image": "",
     "segments": [
@@ -210,7 +210,7 @@
     "id": "yiheyuan-shifang",
     "name": "清晏舫（石舫）",
     "areaId": "yiheyuan",
-    "location": [116.263583, 39.996778],
+    "location": [116.269655, 39.998024],
     "radius": 30,
     "image": "",
     "segments": [
@@ -228,7 +228,7 @@
     "id": "yiheyuan-shiqikongqiao",
     "name": "十七孔桥",
     "areaId": "yiheyuan",
-    "location": [116.271773, 39.989205],
+    "location": [116.278330, 39.990481],
     "radius": 40,
     "image": "",
     "segments": [
@@ -246,7 +246,7 @@
     "id": "yiheyuan-kunminghu",
     "name": "昆明湖",
     "areaId": "yiheyuan",
-    "location": [116.270000, 39.995000],
+    "location": [116.273500, 39.994500],
     "radius": 60,
     "image": "",
     "segments": [
@@ -264,7 +264,7 @@
     "id": "tiantan-qiniandian",
     "name": "祈年殿",
     "areaId": "tiantan",
-    "location": [116.406600, 39.882700],
+    "location": [116.412867, 39.883659],
     "radius": 40,
     "image": "",
     "segments": [
@@ -282,7 +282,7 @@
     "id": "tiantan-yuanqiutan",
     "name": "圜丘坛",
     "areaId": "tiantan",
-    "location": [116.406500, 39.875700],
+    "location": [116.413162, 39.876964],
     "radius": 40,
     "image": "",
     "segments": [
@@ -300,7 +300,7 @@
     "id": "tiantan-huangqiongyu",
     "name": "皇穹宇",
     "areaId": "tiantan",
-    "location": [116.406500, 39.877300],
+    "location": [116.413131, 39.878341],
     "radius": 30,
     "image": "",
     "segments": [
@@ -318,7 +318,7 @@
     "id": "tiantan-danbiqiao",
     "name": "丹陛桥",
     "areaId": "tiantan",
-    "location": [116.406500, 39.879200],
+    "location": [116.412887, 39.879991],
     "radius": 50,
     "image": "",
     "segments": [
@@ -336,7 +336,7 @@
     "id": "badaling-guancheng",
     "name": "关城",
     "areaId": "badaling",
-    "location": [115.995500, 40.353200],
+    "location": [116.012741, 40.355588],
     "radius": 40,
     "image": "",
     "segments": [
@@ -354,7 +354,7 @@
     "id": "badaling-haohanpo",
     "name": "好汉坡",
     "areaId": "badaling",
-    "location": [116.004500, 40.357000],
+    "location": [116.021049, 40.361798],
     "radius": 50,
     "image": "",
     "segments": [
@@ -372,7 +372,7 @@
     "id": "badaling-fenghuotai",
     "name": "烽火台",
     "areaId": "badaling",
-    "location": [116.001000, 40.354500],
+    "location": [116.014773, 40.357438],
     "radius": 30,
     "image": "",
     "segments": [
@@ -390,7 +390,7 @@
     "id": "badaling-beibalou",
     "name": "北八楼",
     "areaId": "badaling",
-    "location": [116.005500, 40.357500],
+    "location": [116.021990, 40.362068],
     "radius": 30,
     "image": "",
     "segments": [

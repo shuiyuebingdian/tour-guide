@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
+import { wgs84ToGcj02 } from '../utils/geo';
 
 export interface GeolocationState {
-  location: number[] | null; // [lng, lat]
+  location: number[] | null; // [lng, lat] in GCJ-02
   error: string | null;
   loading: boolean;
 }
@@ -22,7 +23,7 @@ export function useGeolocation() {
     const id = navigator.geolocation.watchPosition(
       (pos) => {
         setState({
-          location: [pos.coords.longitude, pos.coords.latitude],
+          location: wgs84ToGcj02([pos.coords.longitude, pos.coords.latitude]),
           error: null,
           loading: false,
         });

@@ -1,15 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Attraction, ScenicArea } from '../types';
-import { wgs84ToGcj02 } from '../utils/geo';
 import './MapView.css';
 
 declare global {
   interface Window {
     AMap: any;
     _AMapSecurityConfig: { securityJsCode: string };
-    __attractions: Attraction[];
-    __areas: ScenicArea[];
-    __wgs84ToGcj02: (coords: number[]) => [number, number];
   }
 }
 
@@ -118,7 +114,7 @@ export default function MapView({
     clearAreaMarkers(map);
     areas.forEach((area) => {
       const marker = new AMap.Marker({
-        position: wgs84ToGcj02(area.center),
+        position: area.center,
         title: area.name,
         content: areaMarkerHtml(area.icon, area.name),
         offset: new AMap.Pixel(0, -24),
@@ -143,7 +139,7 @@ export default function MapView({
       const color = AREA_COLORS[attraction.areaId] || '#1a73e8';
       const dotHtml = attractionDotHtml(color);
       const marker = new AMap.Marker({
-        position: wgs84ToGcj02(attraction.location),
+        position: attraction.location,
         title: attraction.name,
         content: dotHtml,
         offset: new AMap.Pixel(-7, -7),
@@ -191,16 +187,15 @@ export default function MapView({
       attractionMarkersRef.current = [];
       userMarkerRef.current = null;
 
-      const gcjLocation = wgs84ToGcj02(userLocation);
       const map = new AMap.Map(containerRef.current, {
         zoom: 15,
-        center: gcjLocation,
+        center: userLocation,
       });
       mapRef.current = map;
       map.on('click', closeInfoWindow);
 
       userMarkerRef.current = new AMap.Marker({
-        position: gcjLocation,
+        position: userLocation,
         content:
           '<div style="background:#1a73e8;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 8px rgba(26,115,232,0.5),0 2px 6px rgba(0,0,0,0.2);"></div>',
         offset: new AMap.Pixel(-10, -10),
@@ -212,16 +207,15 @@ export default function MapView({
     }
 
     // Happy path: create map directly at GPS location
-    const gcjLocation = wgs84ToGcj02(userLocation);
     const map = new AMap.Map(containerRef.current, {
       zoom: 15,
-      center: gcjLocation,
+      center: userLocation,
     });
     mapRef.current = map;
     map.on('click', closeInfoWindow);
 
     userMarkerRef.current = new AMap.Marker({
-      position: gcjLocation,
+      position: userLocation,
       content:
         '<div style="background:#1a73e8;width:14px;height:14px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 8px rgba(26,115,232,0.5),0 2px 6px rgba(0,0,0,0.2);"></div>',
       offset: new AMap.Pixel(-10, -10),
@@ -240,7 +234,7 @@ export default function MapView({
       const AMap = amapRef.current;
       const map = new AMap.Map(containerRef.current, {
         zoom: 15,
-        center: wgs84ToGcj02([116.390720, 39.916580]),
+        center: [116.397463, 39.909187],
       });
       mapRef.current = map;
       map.on('click', closeInfoWindow);
@@ -260,7 +254,7 @@ export default function MapView({
   // Keep user marker in sync when location updates after initial creation
   useEffect(() => {
     if (!mapRef.current || !userLocation || !userMarkerRef.current) return;
-    userMarkerRef.current.setPosition(wgs84ToGcj02(userLocation));
+    userMarkerRef.current.setPosition(userLocation);
   }, [userLocation]);
 
   // Handle area selection: zoom to area bounds and show attraction markers
@@ -280,10 +274,7 @@ export default function MapView({
       clearAttractionMarkers(map);
       closeInfoWindow();
 
-      // Zoom to area bounds based on radius
-      const gcjCenter = wgs84ToGcj02(area.center);
-      const center = new window.AMap.LngLat(gcjCenter[0], gcjCenter[1]);
-      // Approximate: radius in meters → map zoom
+      const center = new window.AMap.LngLat(area.center[0], area.center[1]);
       const zoomByRadius = (r: number) => {
         if (r <= 500) return 15;
         if (r <= 1000) return 14;
@@ -301,7 +292,7 @@ export default function MapView({
 
       // Zoom back out to show all areas
       if (userLocation) {
-        map.setZoomAndCenter(13, wgs84ToGcj02(userLocation));
+        map.setZoomAndCenter(13, userLocation);
       }
     }
   }, [selectedAreaId]);
