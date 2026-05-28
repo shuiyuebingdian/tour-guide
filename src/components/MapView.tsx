@@ -7,6 +7,9 @@ declare global {
   interface Window {
     AMap: any;
     _AMapSecurityConfig: { securityJsCode: string };
+    __attractions: Attraction[];
+    __areas: ScenicArea[];
+    __wgs84ToGcj02: (coords: number[]) => [number, number];
   }
 }
 

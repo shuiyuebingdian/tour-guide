@@ -9,7 +9,7 @@ import { useAutoPlayPreference } from './hooks/useAutoPlayPreference';
 import { useTriggerDistance } from './hooks/useTriggerDistance';
 import { useWakeLock } from './hooks/useWakeLock';
 import NetworkToast from './components/NetworkToast';
-import { haversineDistance } from './utils/geo';
+import { haversineDistance, wgs84ToGcj02 } from './utils/geo';
 import MapView from './components/MapView';
 import AreaCard from './components/AreaCard';
 import ProximityAlert from './components/ProximityAlert';
@@ -43,6 +43,13 @@ function App() {
   const [triggerDistance, setTriggerDistance] = useTriggerDistance();
   const [wakeLockEnabled, setWakeLockEnabled] = useWakeLock();
   const { unplayedNearby } = useNearbyAttractions(location, allAttractions, triggerDistance);
+
+  // Debug helpers — type `__toGcj02()` in Console to see converted coords
+  useEffect(() => {
+    window.__attractions = allAttractions;
+    window.__areas = areasData;
+    window.__wgs84ToGcj02 = wgs84ToGcj02;
+  }, []);
 
   const handleProximityPlay = useCallback((attraction: Attraction) => {
     setSelectedAttraction(attraction);
