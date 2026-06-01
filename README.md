@@ -44,9 +44,3 @@ npx vitest run
 
 https://shuiyuebingdian.github.io/tour-guide
 
-## 当前限制
-
-- 目前只有北京故宫示例数据。
-- 景点图片和真实应用图标尚未补齐。
-- GPS 自动触发弹窗/震动提示尚未实现。
-- 高德地图 API key 当前在代码中硬编码，公开仓库需改为受限 key 或构建环境变量。
